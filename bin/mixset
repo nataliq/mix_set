@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'mix_set/interfaces/console_ui'
+
+MixSetConsole.new.start_console 
