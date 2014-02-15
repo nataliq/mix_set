@@ -23,11 +23,13 @@ For GUI you have to install
 - [Cairo](http://cairographics.org/)
     brew install cairo
     
-Instalation
+Installation
 =======
 
+**mix_set** will be available soon as a [ruby gem](http://rubygems.org/). Then you can simply:
     gem install mix_set
     bundle install
+Be patient! :}
     
 Console UI
 =======
