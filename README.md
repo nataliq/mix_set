@@ -21,7 +21,8 @@ For GUI you have to install
 - [XQuartz](https://xquartz.macosforge.org/landing/)  
     [download link](https://xquartz.macosforge.org/downloads/SL/XQuartz-2.7.5.dmg)
 - [Cairo](http://cairographics.org/)
-    brew install cairo
+
+        brew install cairo
     
 Installation
 =======
