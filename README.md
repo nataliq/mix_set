@@ -49,4 +49,4 @@ With 8tracks account you have more power. You can register on 8tracks [website](
 API usage
 ======
 
-You can you **mix_set** gem to create your own player. For more information see [documentation].
+You can you **mix_set** gem to create your own player. For more information see its [documentation](http://).
