@@ -1,8 +1,6 @@
 mix_set
 =======
 
-Here you can find source code for mix_set ruby gem
-
 mix_set is an 8tracks streaming library for OS X/Windows users. 
 It comes with console and graphical user interfaces and provides simple ruby api so you can build your own player!
 
@@ -18,9 +16,10 @@ Requirements
 - [Gems](http://rubygems.org) 1.5 or above
 - [Bundler](http://bundler.io/) 1.0 or above
 
-For GUI you hava to install 
+For GUI you have to install 
 
-- [XQuartz](https://xquartz.macosforge.org/landing/)  [download it](https://xquartz.macosforge.org/downloads/SL/XQuartz-2.7.5.dmg)
+- [XQuartz](https://xquartz.macosforge.org/landing/)  
+    [download link](https://xquartz.macosforge.org/downloads/SL/XQuartz-2.7.5.dmg)
 - [Cairo](http://cairographics.org/)
     brew install cairo
     
