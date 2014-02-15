@@ -27,8 +27,10 @@ Installation
 =======
 
 **mix_set** will be available soon as a [ruby gem](http://rubygems.org/). Then you can simply:
-    gem install mix_set
-    bundle install
+
+        gem install mix_set
+        bundle install
+        
 Be patient! :}
     
 Console UI
