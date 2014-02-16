@@ -4,13 +4,14 @@ module ApiCommunication
     attr_accessor :object_class, :nesting
 
     def initialize(object_class: nil, nesting: [])
-      @object_class = object_class
+      @object_class = "ApiCommunication::ApiObjects::#{object_class}"
       @nesting = nesting
     end
     
     def parse_json(json)
-      objects = json.get_nested_object(nesting)
-      objects = parse_objects_of_class objects, object_class unless object_class.nil? or objects.nil?
+      return json unless json.class == Hash
+      objects = json.get_nested_object nesting
+      objects = parse_objects_of_class objects, object_class if object_class and objects
       objects
     end
 
@@ -74,7 +75,7 @@ class Hash
     array_of_keys = (keys.class == String) ? keys.split("/") : keys
     array_of_keys.reduce(self) do |nested_object, key| 
       next if nested_object.nil?
-      nested_object[key.to_s] 
+      nested_object[key.to_s]
     end
   end
 end

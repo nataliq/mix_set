@@ -32,20 +32,18 @@ module ApiCommunication
       use_pagination = respond_to? :paging_params
       params = {:include => use_pagination ? "mixes+pagination" : "mixes"}
       params.merge(paging_params) if use_pagination
-      parser = Parser.new object_class: "ApiCommunication::ApiObjects::Mix", nesting: "mix_set/mixes"
-      json = json_for_path "mix_sets/all", params
-      parser.parse_json json unless parser.nil?
+      parser = Parser.new object_class: "Mix", nesting: "mix_set/mixes"
+      objects_for_request "mix_sets/all", params, parser: parser
     end
 
     def track_for_mix(mix_id, play_next = false)
       track_path = play_next ? "next" : "play"
-      parser = Parser.new object_class: "ApiCommunication::ApiObjects::Track", nesting: "set/track"
-      json = json_for_path "sets/#{@play_token}/#{track_path}", {mix_id: mix_id}
-      (parser.parse_json(json) or []).first
+      parser = Parser.new object_class: "Track", nesting: "set/track"
+      objects_for_request("sets/#{@play_token}/#{track_path}", {mix_id: mix_id}, parser: parser).first
     end
 
     def report_mix(track_id, mix_id)
-      json_for_path "/sets/#{@play_token}/report", {track_id: track_id, mix_id: mix_id}
+      objects_for_request "/sets/#{@play_token}/report", {track_id: track_id, mix_id: mix_id}
     end
   end
 
@@ -58,8 +56,10 @@ module ApiCommunication
     end
 
     def retrieve_user_data(key = nil)
-      user_data = (Marshal.load File.read(USER_DATA_FILE_PATH) or {})
-      user_data[key]
+      if File.exist? USER_DATA_FILE_PATH
+        user_data = Marshal.load File.read(USER_DATA_FILE_PATH) or {}
+        user_data[key]
+      end
     end
 
   end
@@ -70,11 +70,33 @@ module ApiCommunication
 
     def authorize(username, password)
       params = {login: username, password: password}
-      parser = Parser.new(nesting: "user/user_token")
-      @user_token = objects_for_path path: "/sessions", method: :post, params: params, parser: parser
-      save_user_data({:token => @user_token})
+      parser = Parser.new nesting: "user/user_token"
+      @user_token = objects_for_request "/sessions", params,  method: :post, parser: parser
+      save_user_data({token: @user_token, username: username})
+      not @user_token.nil?
     end
 
+    def get_user
+      retrieve_user_data :username
+    end
+  end
+
+  require 'faraday'
+
+  class ApiMiddleware < Faraday::Middleware
+
+    require 'json'
+
+    def call(env)
+      @app.call(env).on_complete do |environment|
+        env.body = parse env.body
+      end
+    end
+
+    def parse(body)
+      json = JSON.parse body
+      json["status"] == "200 OK" ? json : json["errors"]
+    end
   end
 
   class ApiClient
@@ -87,8 +109,6 @@ module ApiCommunication
 
     # private_constant :API_KEY
 
-    require 'faraday'
-    require 'json'
     require 'singleton'
     require_relative '../model/api_objects'
 
@@ -101,6 +121,7 @@ module ApiCommunication
       options = {:url => "http://8tracks.com", :headers => {'X-Api-Key' => '86525d0414507857fbbcf1cdad9606fc8e0efc55'}, :params => {"api_version" => 3}}
       @connection = Faraday.new(options) do |faraday|
         faraday.request  :url_encoded
+        faraday.use ApiMiddleware
         faraday.adapter  Faraday.default_adapter
       end
       @play_token = Parser.new(nesting: "play_token").parse_json json_for_path "/sets/new"
@@ -108,14 +129,15 @@ module ApiCommunication
     end
 
     def get_tags
-      parser = ApiObjects::Parser.new object_class: "ApiCommunication::ApiObjects::Tag", nesting: "tag_cloud/tags"
-      parser.parse_json json_for_path "/tags" or []
+      parser = ApiObjects::Parser.new object_class: "Tag", nesting: "tag_cloud/tags"
+      objects_for_request "/tags", parser: parser or []
     end
 
     private 
 
-    def json_for_path(path, params = {}, method = :get)
-      json = JSON.parse @connection.public_send(method, "#{path}.json", params).body
+    def objects_for_request(path, params = {}, method: :get, parser: nil)
+      @connection.public_send(method, "#{path}.json", params).body
+      parser.parse_json json unless parser.nil? or []
     end
 
   end
