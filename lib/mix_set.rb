@@ -3,9 +3,18 @@ class MixSet
   require_relative 'mix_set/api_communication/api_client'
   require_relative 'mix_set/players/mplayer'
 
-  def initialize(player = Player.instance)
+  def initialize(player = Player.instance, output = STDOUT)
     @mixes = ApiCommunication::ApiClient.instance.get_mixes
     @player = player
+    @output = output
+  end
+
+  def login(username, password)
+    ApiCommunication::ApiClient.instance.authorize username, password
+  end
+
+  def current_user_name
+    ApiCommunication::ApiClient.instance.get_user
   end
   
   def list(*options)
@@ -47,7 +56,7 @@ class MixSet
   end
 
   def method_missing(method, *args)
-    "Ooops.. No such method :)"
+    @output.puts "Ooops.. No such method :)"
   end
 
   private
@@ -68,7 +77,7 @@ class MixSet
 
   def report_current_song
     ApiCommunication::ApiClient.instance.report_mix @current_mix.id, @current_track.id
-    puts "Reported 30 seconds played from track: #{@current_track.name}"
+    @output.puts "Reported 30 seconds played from track: #{@current_track.name}"
   end
   
 end
