@@ -22,6 +22,8 @@ GEM
       glib2 (= 2.1.0)
     glib2 (2.1.0)
       pkg-config
+    green_shoes (1.1.374)
+      gtk2
     gtk2 (2.1.0)
       atk (= 2.1.0)
       gdk_pixbuf2 (= 2.1.0)
@@ -46,6 +48,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.0)
+  green_shoes
   gtk2
   mix_set!
   rspec
