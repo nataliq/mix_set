@@ -8,15 +8,16 @@ require 'mix_set'
 
   background rgb(240, 250, 208)
 
+  @mix_set_player = MixSet.new 
   @stack = stack margin: default_margin do
 
     labels = []
-    MixSet.instance.list.each_with_index do |song, index| 
+    @mix_set_player.list.each_with_index do |song, index| 
       puts index
       flow do
         # image "http://ficdn.audioreview.com/images/smilies/2.gif"
         button = button "play", tag: index
-        button.click { MixSet.instance.play [button.tag] }
+        button.click { @mix_set_player.play [button.tag] }
         labels << para(
           "#{song}", 
           width: 300, 
@@ -31,17 +32,17 @@ require 'mix_set'
     end
   end
 
-  @image = image "/Users/natalia.patsovska/Dropbox/Ruby/Ruby Project/lib/images/play.png", width: 23, height: 23
-  @image.click {  
-    @image.path = "/Users/natalia.patsovska/Dropbox/Ruby/Ruby Project/lib/images/pause.png" 
-    @image.hide
-    @image.show
-  }
-  @b  = button "clear" do
-       alert "button.tag = #{@b.instance_variable_get :tag}\n"
-     end
+  # @image = image "/Users/natalia.patsovska/Dropbox/Ruby/Ruby Project/lib/images/play.png", width: 23, height: 23
+  # @image.click {  
+  #   @image.path = "/Users/natalia.patsovska/Dropbox/Ruby/Ruby Project/lib/images/pause.png" 
+  #   @image.hide
+  #   @image.show
+  # }
+  # @b  = button "clear" do
+  #      alert "button.tag = #{@b.instance_variable_get :tag}\n"
+  #    end
 
-  def login_form
-   para "haha"
-  end
+  # def login_form
+  #  para "haha"
+  # end
 end
