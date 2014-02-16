@@ -57,7 +57,7 @@ module ApiCommunication
 
     def retrieve_user_data(key = nil)
       if File.exist? USER_DATA_FILE_PATH
-        user_data = Marshal.load File.read(USER_DATA_FILE_PATH) or {}
+        user_data = (Marshal.load File.read(USER_DATA_FILE_PATH) or {})
         user_data[key]
       end
     end
