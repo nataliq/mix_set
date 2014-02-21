@@ -29,7 +29,7 @@ module MixSet
 
     def current_state_message
       if playing?
-        "Mix: #{@current_mix.name} | Track: #{current_track.artist} - #{@current_track.title}"
+        "Mix: #{@current_mix.name} | Track: #{current_track.artist} - #{@current_track.title} ♬ ♪"
       elsif @paused
         "Mix: #{@current_mix.name} | Paused"
       else
@@ -41,14 +41,23 @@ module MixSet
       @mixes.map.with_index { |mix, index| "#{index.succ}. #{mix.name} - #{mix.duration}" }
     end
 
-    def tracking?
-      (not @tracking_thread.nil?) and @tracking_thread.alive?
+    def favorites
+      tracks = @data_source.favorited_tracks @current_user
+      tracks.map(&:name) if tracks
     end
 
-    def playing=(playing)
-      @playing = playing
-      @tracking_thread.terminate unless @tracking_thread.nil? or playing
-      track_playing if playing
+    def likes
+      mixes = @data_source.liked_mixes
+      mixes.map(&:name) if mixes
+    end
+
+    def listened
+      mixes = @data_source.listened_mixes
+      mixes.map(&:name) if mixes
+    end
+
+    def tracking?
+      (not @tracking_thread.nil?) and @tracking_thread.alive?
     end
 
     def play(params = [], options = [])
@@ -78,13 +87,25 @@ module MixSet
       end
     end
 
-    def method_missing(method, *args)
-      puts "Ooops.. No such method <#{method}> :)"
-    end
-
     def next
       puts "play next"
       play [], [:next]
+    end
+
+    def like 
+      @data_source.set_liked_mix @current_mix.id unless @current_mix.nil?
+    end
+
+    def favorite
+      @data_source.set_favorited_track @current_track.id unless @current_track.nil?
+    end
+
+    private 
+
+    def playing=(playing)
+      @playing = playing
+      @tracking_thread.terminate unless @tracking_thread.nil? or playing
+      track_playing if playing
     end
 
     def track_playing
