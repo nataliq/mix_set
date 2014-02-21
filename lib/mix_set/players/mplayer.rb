@@ -1,4 +1,4 @@
-class Player
+class MPlayer
 
   require 'singleton'
   require 'open4'
@@ -11,11 +11,11 @@ class Player
   end
 
   def play(file)
-    @file = file
-    quit unless @stdin.nil? or @stdin.closed?
+    @file = file #{}"/Users/nataliyapatsovska/Music/all_night.mp3" #file
+    stop
     player = "#{@player_path} #{@mplayer_options} #{@file}"
     @pid, @stdin, @stdout, @stderr = Open4.popen4(player)
-    starts_playing
+    starts_playing?
   end
 
   # Quits MPlayer
@@ -26,38 +26,50 @@ class Player
 
   def quit
     command('quit')
-    @stdin.close
+    @stdin.close unless @stdin.nil? or @stdin.closed?
   end
 
   def get_time_position
     match = "ANS_TIME_POSITION"
-    command("get_time_pos",/#{match}/).gsub("#{match}=","").gsub("'","").to_f
+    time_position = -10.0
+
+    time_position_string = command("get_time_pos",/#{match}/)
+    if time_position_string
+      time_position = time_position_string.gsub("#{match}=","").gsub("'","").to_f
+    end
+    time_position
+  end
+
+  def playing?
+    log = @stdout.gets.inspect
+    not log.nil?
   end
 
   private
 
-  def starts_playing
+  def starts_playing?
     playing = false
-    loop  do
+    1.upto(50).each do
       log = @stdout.gets.inspect
-      if log =~ /(playback|End of file)/
-        playing = log =~ /playback/
+      if log =~ /(Resolving|End of file|playback)/
+        playing = log =~ /(Resolving|playback)/
         break
       end
     end
-
-    playing
+    not playing.nil?
   end
 
   def command(cmd, match = //)
-    @stdin.puts(cmd)
-    response = ""
-    until response =~ match
-      response = @stdout.gets
+    unless @stdin.nil? or @stdin.closed?
+      @stdin.puts(cmd)
+      response = ""
+      until response =~ match
+        response = @stdout.gets
+      end
+      response.gsub("\e[A\r\e[K","")
     end
-    response.gsub("\e[A\r\e[K","")
   rescue Errno::EPIPE
-    
+
   end
 
 end
