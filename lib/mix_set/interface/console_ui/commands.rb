@@ -2,7 +2,7 @@ module MixSet
   class MixSetCommand
 
     COMMANDS = %w[
-      login play pause stop status next previous mixes
+      login mixes play pause stop next status like likes favorite favorites history
       ].freeze
 
     attr_reader :components, :method
@@ -22,8 +22,10 @@ module MixSet
         "Can't play this mix. Stream not found."
       when :login
         "Login failed."
-      when :stop, :pause
+      when :stop, :pause, :logout
         ""
+      when :like, :likes, :favorites, :favorite
+        "You have to login first."
       when *COMMANDS
         "Network communication problem."
       else
@@ -35,6 +37,9 @@ module MixSet
       case command.method
       when :login
         ""
+      when :like, :favorite
+        item = command.method == :like ? "mix" : "track"
+        "You successfully #{command.method.to_s}d current #{item}."
       else
         nil
       end

@@ -35,6 +35,7 @@ module MixSet
       end
 
       def stop_console
+        @mix_set_player.stop
         puts "Thanks for using mix_set player! See you soon!"
         system('stty', @state); 
         exit
@@ -54,6 +55,17 @@ module MixSet
         response = @mix_set_player.login *params
         set_active_user
         response
+      end
+
+      def logout
+        response = @mix_set_player.logout
+        set_active_user
+        response
+      end
+
+      def history
+        puts "Played mixes:"
+        @mix_set_player.listened
       end
 
       private
@@ -78,6 +90,9 @@ module MixSet
         if username
           show_greeting username
           @default_prompt_text = "#{username}~#{DEFAULT_PROMPT_TEXT}"
+          set_current_prompt_text
+        else
+          @default_prompt_text = DEFAULT_PROMPT_TEXT
           set_current_prompt_text
         end
       end
@@ -113,10 +128,6 @@ module MixSet
         return unless text.is_a? String or text.is_a? Array
         return if text.empty?
         [text].flatten.each { |line| puts line.send(color_method_for_text_type type) }
-      end
-
-      def put_help_message_with_text(text)
-        puts text.console_blue
       end
 
     end
