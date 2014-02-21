@@ -29,7 +29,15 @@ module MixSet
 
       include Paging
 
-      def get_mixes
+      #lazy loading
+      def mixes_parser
+        unless @mixes_parser
+          @mixes_parser = Parser.new object_class: "Mix", nesting: "mix_set/mixes"
+        end
+        @mixes_parser
+      end
+
+      def get_mixes(tags = [], sorting = "recent" )
         use_pagination = respond_to? :paging_params
         params = {:include => use_pagination ? "mixes+pagination" : "mixes"}
         params.merge(paging_params) if use_pagination
@@ -46,8 +54,31 @@ module MixSet
       def report_mix(track_id, mix_id)
         parser = Parser.new nesting: "errors"
         params = {track_id: track_id, mix_id: mix_id}
-        errors = objects_for_request("/sets/#{@play_token}/report", params, parser: parser)
+        errors = objects_for_request "/sets/#{@play_token}/report", params, parser: parser
         errors.nil? or errors.empty?
+      end
+
+      def set_liked_mix(mix_id, liked = true)
+        parser = Parser.new nesting: "errors"
+        objects_for_request "/mixes/#{mix_id}/#{liked ? "like" : "unlike"}"
+      end
+
+      def liked_mixes
+        objects_for_request "/mix_sets/liked", {:include => "mixes"}, parser: mixes_parser
+      end
+
+      def set_favorited_track(track_id, favourited = true)
+        parser = Parser.new nesting: "errors"
+        objects_for_request "/tracks/#{track_id}/#{favourited ? "fav" : "unfav"}"
+      end
+
+      def favorited_tracks(username)
+        parser = Parser.new object_class: "Track", nesting: "tracks"
+        objects_for_request "/users/#{username}/favorite_tracks", parser: parser
+      end
+
+      def listened_mixes
+        objects_for_request "/mix_sets/listened", {:include => "mixes"}, parser: mixes_parser
       end
     end
   end
