@@ -1,6 +1,50 @@
 module MixSet
   module ApiCommunication
 
+    module SmartId
+      URL_PARAM_SUBSTITUTIONS = [
+        [ '_[^_]', '__' ],
+        [ ' ', '_'  ],
+        [ '/', '\\' ],
+        [ '.', '^'  ]
+      ]
+      SINGLE_TYPES = %w[
+        all listened recommended liked
+      ]
+      SMART_TYPES = %w[
+        tags keyword artist
+      ]
+      SORT_TERMS = %w[
+        recent hot popular
+      ]
+
+      def self.smart_id(type: nil, values: [], sort: nil)
+        smart_type = "all"
+        if SINGLE_TYPES.include? type
+          smart_type = type
+        elsif SMART_TYPES.include?(type) and (not values.empty?)
+          type_values = values.reduce("") do |result, value| 
+            result + "+" + url_param_from_string(value)
+          end
+          smart_type = type + type_values
+        end
+        smart_type.concat(":#{sort}") if sort and SORT_TERMS.include? sort
+
+        smart_type
+      end
+
+      def self.url_param_from_string(string)
+        param = string.clone
+        param.strip!
+      
+        URL_PARAM_SUBSTITUTIONS.each do |decoded, encoded|
+          param = param.gsub(decoded, encoded)
+        end
+        
+        Rack::Utils.escape(param)
+      end
+    end
+
     class Parser
       attr_accessor :object_class, :nesting
 
@@ -61,6 +105,9 @@ module MixSet
             "name" => "title",
             "performer" => "artist"
           }
+        end
+        def name
+          "#{artist} - #{title}"
         end
       end
 
