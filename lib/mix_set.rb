@@ -37,7 +37,12 @@ module MixSet
       end
     end
 
-    def mixes(tags = [], options = [])
+    def mixes(parameters = [], options = [])
+      unless parameters.empty? and options.empty?
+        key, *values = *parameters
+        @mixes = @data_source.get_mixes key, values, options
+      end
+      
       @mixes.map.with_index { |mix, index| "#{index.succ}. #{mix.name} - #{mix.duration}" }
     end
 

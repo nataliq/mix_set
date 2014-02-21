@@ -49,10 +49,10 @@ module MixSet
 
     def parsed_components(input)
       command, *rest = input.split(/\s+/)
-      rest.each { |option| option.gsub!(/,/, '') } 
-      options, params =  rest.partition { |string| string =~ /\p{Pd}\S*/ }
+      options, parameters =  rest.partition { |string| string =~ /\p{Pd}\S*/ }
+      parameters.each { |parameter| parameter.gsub!(/\W/, '') } 
       options.each { |option| option.gsub!(/\p{Pd}/, '') }  
-      [command ? command.to_sym : nil, params, options]
+      [command ? command.to_sym : nil, parameters, options]
     end
   end
 

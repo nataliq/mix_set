@@ -37,12 +37,12 @@ module MixSet
         @mixes_parser
       end
 
-      def get_mixes(tags = [], sorting = "recent" )
+      def get_mixes(type = nil, values = [], sortings = [])
         use_pagination = respond_to? :paging_params
         params = {:include => use_pagination ? "mixes+pagination" : "mixes"}
         params.merge(paging_params) if use_pagination
-        parser = Parser.new object_class: "Mix", nesting: "mix_set/mixes"
-        objects_for_request "mix_sets/all", params, parser: parser
+        smart_id  = SmartId.smart_id type: type, values: values, sort: sortings.first
+        objects_for_request "mix_sets/#{smart_id}", params, parser: mixes_parser
       end
 
       def track_for_mix(mix_id, play_next = false)
