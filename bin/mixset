@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 
-require 'mix_set/interfaces/console_ui'
+require 'mix_set/interfaces/console_ui/console'
 
-MixSetConsole.new.start_console 
+MixSet::Interface::Console.new.start_console 
