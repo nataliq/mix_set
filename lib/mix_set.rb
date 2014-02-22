@@ -29,7 +29,7 @@ module MixSet
 
     def current_state_message
       if playing?
-        "Mix: #{@current_mix.name} | Track: #{current_track.artist} - #{@current_track.title} ♬ ♪"
+        "Mix: #{@current_mix.name} | Track: #{current_track.artist} - #{@current_track.title} ♬ ♪ "
       elsif @paused
         "Mix: #{@current_mix.name} | Paused"
       else
@@ -43,7 +43,7 @@ module MixSet
         @mixes = @data_source.get_mixes key, values, options
       end
       
-      @mixes.map.with_index { |mix, index| "#{index.succ}. #{mix.name} - #{mix.duration}" }
+      list_mixes @mixes
     end
 
     def favorites
@@ -53,12 +53,12 @@ module MixSet
 
     def likes
       mixes = @data_source.liked_mixes
-      mixes.map(&:name) if mixes
+      list_mixes mixes
     end
 
     def listened
       mixes = @data_source.listened_mixes
-      mixes.map(&:name) if mixes
+      list_mixes mixes
     end
 
     def tracking?
@@ -75,7 +75,6 @@ module MixSet
       else
         success = @player.play(@current_track.stream_url)
       end
-      puts "Success: #{success}"
       self.playing = success
     end
 
@@ -93,7 +92,6 @@ module MixSet
     end
 
     def next
-      puts "play next"
       play [], [:next]
     end
 
@@ -111,6 +109,10 @@ module MixSet
       @playing = playing
       @tracking_thread.terminate unless @tracking_thread.nil? or playing
       track_playing if playing
+    end
+
+    def list_mixes(mixes)
+      mixes.map.with_index { |mix, index| "#{index.succ}. #{mix.name} - #{mix.duration}" } if mixes
     end
 
     def track_playing
@@ -131,6 +133,7 @@ module MixSet
         end
       end
     end
-    
+
+
   end
 end

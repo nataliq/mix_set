@@ -68,6 +68,14 @@ module MixSet
         @mix_set_player.listened
       end
 
+      def help(method = [])
+        if method.empty?
+          MixSetCommand::COMMANDS.each { |method| help [method]}
+        else
+          put_message_with_text MixSetCommand.help_for_method(method.first.to_sym), type: :help
+        end
+      end
+
       private
 
       def get_user_input(message, hidden: false)
@@ -118,7 +126,7 @@ module MixSet
         when :error
           :console_red
         when :help
-          :console_blue
+          :console_purple
         when :prompt
           :console_yellow
         end
@@ -129,7 +137,6 @@ module MixSet
         return if text.empty?
         [text].flatten.each { |line| puts line.send(color_method_for_text_type type) }
       end
-
     end
   end
 end

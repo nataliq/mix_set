@@ -1,8 +1,9 @@
 module MixSet
   class MixSetCommand
 
+    require_relative 'messages'
     COMMANDS = %w[
-      login mixes play pause stop next status like likes favorite favorites history
+      login logout mixes play pause stop next like likes favorite favorites history
       ].freeze
 
     attr_reader :components, :method
@@ -15,35 +16,6 @@ module MixSet
     def params; @components[1]; end
 
     def options; @components.last; end
-
-    def self.error_message_for_command(command)
-      case command.method
-      when :play
-        "Can't play this mix. Stream not found."
-      when :login
-        "Login failed."
-      when :stop, :pause, :logout
-        ""
-      when :like, :likes, :favorites, :favorite
-        "You have to login first."
-      when *COMMANDS
-        "Network communication problem."
-      else
-        "Undefined command. If you need help type <help> command."
-      end
-    end
-
-    def self.success_message_for_command(command)
-      case command.method
-      when :login
-        ""
-      when :like, :favorite
-        item = command.method == :like ? "mix" : "track"
-        "You successfully #{command.method.to_s}d current #{item}."
-      else
-        nil
-      end
-    end
 
     private
 
