@@ -1,7 +1,7 @@
 require 'green_shoes'
 require 'mix_set'
 
-@app = Shoes.app height: 600, width: 400, title: "MixSet Player" do
+@app = Shoes.app height: 700, width: 500, title: "MixSet Player" do
 
   label_size = 11
   default_margin = 8
@@ -53,11 +53,12 @@ require 'mix_set'
      button 'search' do
         @text = @edit.text
         params = [@filter, @text]
-        alert("#{params}")
+        
+        @mix_stack.clear() unless @mix_stack.nil?
 
         append do
 
-          stack margin: default_margin do
+          @mix_stack = stack margin: default_margin do
 
           mixes = @mix_set_player.mixes(params)
           mixes.each_with_index do |mix, index|

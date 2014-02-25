@@ -2,6 +2,7 @@ module MixSet
   class MixSetCommand
     def self.help_for_method(method)
       description, usages = "", ["#{method.to_s}"]
+      error = nil
       case method
       when :login
         description = "Authorize user with his 8tracks account."
@@ -25,8 +26,11 @@ module MixSet
         description = "Mark current #{item} as #{method.to_s}d."
       when :likes, :favorites
         description = "Show list of all #{method.to_s}."
+      else
+        error = "No such method."
       end
-      "#Method: {method}\nDescription: #{description}\n\nUsages:\n    #{usages * "\n    "}\n"
+      return error if error
+      "\n#Method: #{method}\nDescription: #{description}\n\nUsages:\n    #{usages * "\n    "}\n"
     end
 
     def self.error_message_for_command(command)

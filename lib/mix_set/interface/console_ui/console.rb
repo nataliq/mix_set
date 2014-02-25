@@ -125,8 +125,6 @@ module MixSet
           :console_green
         when :error
           :console_red
-        when :help
-          :console_purple
         when :prompt
           :console_yellow
         end
@@ -135,7 +133,11 @@ module MixSet
       def put_message_with_text(text, type: :success)
         return unless text.is_a? String or text.is_a? Array
         return if text.empty?
-        [text].flatten.each { |line| puts line.send(color_method_for_text_type type) }
+        [text].flatten.each do |line|
+          color_method = color_method_for_text_type type
+          line = line.send color_method unless color_method.nil?
+          puts line
+        end
       end
     end
   end
