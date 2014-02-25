@@ -27,7 +27,7 @@ module MixSet
           @user_token = user["user_token"]
           save_user_data({token: @user_token, username: username, id: user["id"]})
         end
-        @user_token.nil? ? false : username
+        user.nil? ? false : user["login"]
       end
 
       def get_user
@@ -35,6 +35,7 @@ module MixSet
       end
 
       def user_with_credentials(username, password)
+        delete_user_data
         authorize(username, password)
       end
 

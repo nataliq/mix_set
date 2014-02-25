@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'open4', '>= 1.0.1'
   spec.add_runtime_dependency 'faraday', '~> 0.9.0'
+  spec.add_runtime_dependency 'rake'
   spec
 
   spec.add_runtime_dependency 'colorize'
