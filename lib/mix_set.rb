@@ -62,7 +62,7 @@ module MixSet
     end
 
     def tracking?
-      (not @tracking_thread.nil?) and @tracking_thread.alive?
+      (not @tracking_thread.nil?) and @tracking_thread.alive? and @tracking_thread.status != "sleep"
     end
 
     def play(params = [], options = [])
