@@ -4,7 +4,7 @@ module MixSet
     module SmartId
       require 'rack'
       URL_PARAM_SUBSTITUTIONS = [
-        [ '_[^_]', '__' ],
+        [ '_', '__' ],
         [ ' ', '_'  ],
         [ '/', '\\' ],
         [ '.', '^'  ]
@@ -24,9 +24,7 @@ module MixSet
         if SINGLE_TYPES.include? type
           smart_type = type
         elsif SMART_TYPES.include?(type) and (not values.empty?)
-          type_values = values.reduce do |result, value| 
-            result + "+" + url_param_from_string(value)
-          end
+          type_values = values.map { |value|  url_param_from_string(value) } * "+"
           smart_type = type + ":" + type_values
         end
         smart_type.concat(":#{sort}") if sort and SORT_TERMS.include? sort
@@ -42,7 +40,8 @@ module MixSet
           param = param.gsub(decoded, encoded)
         end
         
-        Rack::Utils.escape(param)
+        # Rack::Utils.escape(param)
+        param
       end
     end
 
